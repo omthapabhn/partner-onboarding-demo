@@ -1,1 +1,1 @@
-TASK_QUEUE_NAME = "hello-task-queue"
+TASK_QUEUE_NAME = "partner-onboarding-queue"

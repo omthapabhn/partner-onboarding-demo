@@ -1,6 +1,6 @@
 import asyncio
 import config
-from run_worker import SayHello
+from run_worker import PartnerOnboarding
 from temporalio.client import Client
 
 
@@ -10,7 +10,7 @@ async def main():
 
     # Execute a workflow
     result = await client.execute_workflow(
-        SayHello.run, "Temporal", id="hello-workflow", task_queue=config.TASK_QUEUE_NAME
+        PartnerOnboarding.run, "Temporal", id="onboarding-workflow", task_queue=config.TASK_QUEUE_NAME
     )
 
     print(f"Result: {result}")
