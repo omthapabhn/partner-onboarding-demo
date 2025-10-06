@@ -1,3 +1,4 @@
+import asyncio
 from datetime import timedelta
 from activities import OnboardingActivities
 from config import PartnerDetails
@@ -47,7 +48,7 @@ class PartnerOnboarding:
         )
 
          ### workflow for partner onboarding create Account Entity
-        account_entity_result = await workflow.execute_activity_method(
+        future_result1 = workflow.execute_activity_method(
             OnboardingActivities.create_account_entity,
             partner_details,            
             start_to_close_timeout=timedelta(seconds=5),
@@ -55,9 +56,28 @@ class PartnerOnboarding:
         )
 
          ### workflow for partner onboarding create Channel Entity
-        legacy_entity_result = await workflow.execute_activity_method(
+        future_result2 = workflow.execute_activity_method(
             OnboardingActivities.create_channel_entity,
             partner_details,
             start_to_close_timeout=timedelta(seconds=5),
             retry_policy=retry_policy
         )
+
+        ### Do other workflow logic while 2 and 3 run
+        await workflow.sleep(2)
+
+        # Wait for both to complete
+        # await workflow.wait(future_result1)
+        # await workflow.wait(future_result2)
+        
+        ### Wait for async activities to complete
+        account_entity_result = await future_result1
+        channel_entity_result = await future_result2
+
+        ### Start multiple activities in parallel and wait for all
+        # results = await asyncio.gather(
+        # workflow.execute_activity_method(OnboardingActivities.create_account_entity, partner_details, start_to_close_timeout=timedelta(seconds=5), retry_policy=retry_policy),
+        # workflow.execute_activity_method(OnboardingActivities.create_legacy_entity, partner_details, start_to_close_timeout=timedelta(seconds=5), retry_policy=retry_policy)
+        # )
+
+        # account_entity_result, legacy_entity_result = results
